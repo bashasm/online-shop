@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { StateContext } from "../App.jsx";
+import { useSelector } from "react-redux";
 import ThemedButton from "./ThemedButton.jsx";
 
 function Toolbar() {
-  const { theme } = useContext(StateContext);
+  const theme = useSelector((state) => state.theme);
   console.log("[Toolbar]", theme);
   return (
     <div>

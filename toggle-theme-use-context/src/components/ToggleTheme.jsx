@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DispatchContext, StateContext } from "../App";
+import { DispatchContext, StateContext } from "../context/GlobalState";
 
 function ToggleTheme() {
   const { theme } = useContext(StateContext);

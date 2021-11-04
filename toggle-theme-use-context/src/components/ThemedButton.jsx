@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { StateContext } from "../App";
+import { StateContext } from "../context/GlobalState";
 
 function ThemedButton() {
   const { styles: theme } = useContext(StateContext);
