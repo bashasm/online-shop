@@ -1,17 +1,17 @@
 import { useContext } from "react";
 import { useHistory } from "react-router";
-import { ActionsContext, StateContext } from "../context/GlobalState";
+import { addTocart } from "../context/actions/cart";
+import { DispatchContext, StateContext } from "../context/GlobalState";
 
 function Home() {
-  const { addTocart } = useContext(ActionsContext);
+  const dispatch = useContext(DispatchContext);
   const { productsState } = useContext(StateContext);
-
-  console.log("[Home]", productsState);
+  console.log("[Home]");
 
   const history = useHistory();
 
   function onAdd(product) {
-    addTocart(product);
+    dispatch(addTocart(product));
     history.push("/cart");
   }
 
@@ -20,7 +20,7 @@ function Home() {
       {productsState?.items && (
         <>
           <h2>New Arrivals</h2>
-          <div className="productsState">
+          <div className="products">
             {productsState.items.map((product) => (
               <div key={product.id} className="product">
                 <h3>{product.name}</h3>

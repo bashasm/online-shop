@@ -1,27 +1,35 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { ActionsContext, StateContext } from "../context/GlobalState";
+import {
+  clearCart,
+  removeFromCart,
+  updateQuantity,
+} from "../context/actions/cart";
+import { DispatchContext, StateContext } from "../context/GlobalState";
 
 function Cart() {
   const { cartState: cart } = useContext(StateContext);
-  const { clearCart, removeFromCart, updateQuantity } =
-    useContext(ActionsContext);
+  const dispatch = useContext(DispatchContext);
 
   console.log("[Cart]");
 
-  const onClear = () => clearCart();
-  const onRemove = (product) => removeFromCart(product);
+  const onClear = () => dispatch(clearCart());
+  const onRemove = (product) => dispatch(removeFromCart(product));
   const addQuantity = (product) =>
-    updateQuantity({
-      isAdd: true,
-      product,
-    });
+    dispatch(
+      updateQuantity({
+        isAdd: true,
+        product,
+      })
+    );
 
   const removeQuantity = (product) =>
-    updateQuantity({
-      isAdd: false,
-      product,
-    });
+    dispatch(
+      updateQuantity({
+        isAdd: false,
+        product,
+      })
+    );
 
   return (
     <div className="cart-container">
