@@ -1,22 +1,16 @@
-import { createContext, useCallback, useMemo } from "react";
-import cartSlice from "./features/cartSlice";
-import productsSlice from "./features/productsSlice";
+import { createContext, useCallback, useMemo, useReducer } from "react";
+import cartReducer, { cartInitialState } from "./reducers/cart";
+import productsReducer, { productsInitialState } from "./reducers/products";
 
 export const DispatchContext = createContext();
 export const StateContext = createContext();
-export const ActionsContext = createContext();
 
 const GlobalState = ({ children }) => {
-  const {
-    state: cartState,
-    dispatch: cartDispatch,
-    actions: cartActions,
-  } = cartSlice();
-  const {
-    state: productsState,
-    dispatch: productsDispatch,
-    actions: productsActions,
-  } = productsSlice();
+  const [cartState, cartDispatch] = useReducer(cartReducer, cartInitialState);
+  const [productsState, productsDispatch] = useReducer(
+    productsReducer,
+    productsInitialState
+  );
 
   const combineDispatch =
     (...dispatches) =>
@@ -29,8 +23,6 @@ const GlobalState = ({ children }) => {
     [cartDispatch, productsDispatch]
   );
 
-  const actions = { ...productsActions, ...cartActions };
-
   const combinedState = useMemo(
     () => ({ cartState, productsState }),
     [cartState, productsState]
@@ -39,9 +31,7 @@ const GlobalState = ({ children }) => {
   return (
     <DispatchContext.Provider value={combinedDispatch}>
       <StateContext.Provider value={combinedState}>
-        <ActionsContext.Provider value={actions}>
-          {children}
-        </ActionsContext.Provider>
+        {children}
       </StateContext.Provider>
     </DispatchContext.Provider>
   );

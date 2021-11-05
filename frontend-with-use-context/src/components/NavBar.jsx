@@ -4,6 +4,7 @@ import { StateContext } from "../context/GlobalState";
 
 function NavBar() {
   const { cartState } = useContext(StateContext);
+  console.log("[NavBar]", cartState);
 
   return (
     <nav className="nav-bar">
