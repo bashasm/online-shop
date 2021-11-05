@@ -1,4 +1,10 @@
 import { toast } from "react-toastify";
+import {
+  ADD_TO_CART,
+  CLEAR_CART,
+  REMOVE_FROM_CART,
+  UPDATE_QUANTITY,
+} from "../actions/cart";
 
 const cartDataLS =
   localStorage.getItem("cartData") &&
@@ -95,23 +101,48 @@ function updateQuantity(state, action) {
 }
 
 function clearCart(state, action) {
-  return {
+  const newState = {
     items: [],
     totalQuantity: 0,
     totalAmount: 0,
+  };
+  updateLocalStorage(newState);
+  return newState;
+}
+
+function removeFromCart(state, action) {
+  const newState = {
+    ...state,
+    items: state.items.filter((item) => item.id !== action.payload.id),
+  };
+
+  toast.error(`${action.payload.name} removed from cart`, {
+    position: "bottom-left",
+  });
+
+  // update counts
+  const { totalQuantity, totalAmount } = getUpdateCounts(newState);
+
+  return {
+    ...newState,
+    totalQuantity,
+    totalAmount,
   };
 }
 
 export default function reducer(state, action) {
   switch (action.type) {
-    case "ADD_TO_CART":
+    case ADD_TO_CART:
       return addTocart(state, action);
 
-    case "UPDATE_QUANTITY":
+    case UPDATE_QUANTITY:
       return updateQuantity(state, action);
 
-    case "CLEAR_CART":
+    case CLEAR_CART:
       return clearCart(state, action);
+
+    case REMOVE_FROM_CART:
+      return removeFromCart(state, action);
 
     default:
       return state;
