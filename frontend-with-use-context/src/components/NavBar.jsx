@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { StateContext } from "../context/GlobalState";
 
 function NavBar() {
-  const { cartState, productsState } = useContext(StateContext);
-  console.log("[NavBar]", cartState, productsState);
+  const { cartState } = useContext(StateContext);
 
   return (
     <nav className="nav-bar">

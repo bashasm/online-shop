@@ -1,20 +1,22 @@
 import { createContext, useCallback, useMemo } from "react";
-import { useImmerReducer } from "use-immer";
-import cartReducer, { cartInitialState } from "./reducers/cart";
-import productsReducer, { productsInitialState } from "./reducers/products";
+import cartSlice from "./features/cartSlice";
+import productsSlice from "./features/productsSlice";
 
 export const DispatchContext = createContext();
 export const StateContext = createContext();
+export const ActionsContext = createContext();
 
 const GlobalState = ({ children }) => {
-  const [cartState, cartDispatch] = useImmerReducer(
-    cartReducer,
-    cartInitialState
-  );
-  const [productsState, productsDispatch] = useImmerReducer(
-    productsReducer,
-    productsInitialState
-  );
+  const {
+    state: cartState,
+    dispatch: cartDispatch,
+    actions: cartActions,
+  } = cartSlice();
+  const {
+    state: productsState,
+    dispatch: productsDispatch,
+    actions: productsActions,
+  } = productsSlice();
 
   const combineDispatch =
     (...dispatches) =>
@@ -26,17 +28,20 @@ const GlobalState = ({ children }) => {
     combineDispatch(cartDispatch, productsDispatch),
     [cartDispatch, productsDispatch]
   );
+
+  const actions = { ...productsActions, ...cartActions };
+
   const combinedState = useMemo(
     () => ({ cartState, productsState }),
     [cartState, productsState]
   );
 
-  console.log("GlobalState");
-  const value = {};
   return (
     <DispatchContext.Provider value={combinedDispatch}>
       <StateContext.Provider value={combinedState}>
-        {children}
+        <ActionsContext.Provider value={actions}>
+          {children}
+        </ActionsContext.Provider>
       </StateContext.Provider>
     </DispatchContext.Provider>
   );

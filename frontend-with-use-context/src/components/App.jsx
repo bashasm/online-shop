@@ -7,23 +7,22 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { DispatchContext } from "../context/GlobalState";
+import { ActionsContext } from "../context/GlobalState";
 import "./App.css";
 import Cart from "./Cart";
 import Home from "./Home";
 import NavBar from "./NavBar";
 import NotFound from "./NotFound";
-import { getProducts } from "../context/actions/products";
 
 function App() {
-  const dispatch = useContext(DispatchContext);
+  const { getProducts } = useContext(ActionsContext);
 
   const getUsers = async () => {
     const products = await fetch("http://localhost:5000/products").then((res) =>
       res.json()
     );
     // LOAD USERS
-    dispatch(getProducts(products));
+    getProducts(products);
   };
 
   useEffect(() => {
