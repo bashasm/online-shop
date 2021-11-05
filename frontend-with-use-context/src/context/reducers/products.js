@@ -5,10 +5,8 @@ export const productsInitialState = { items: [], status: null };
 export default function reducer(state, action) {
   switch (action.type) {
     case GET_PRODUCTS:
-      return {
-        ...state,
-        items: action.payload,
-      };
+      state.items = action.payload;
+      return;
     default:
       return state;
   }

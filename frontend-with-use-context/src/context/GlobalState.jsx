@@ -1,4 +1,5 @@
-import { createContext, useCallback, useMemo, useReducer } from "react";
+import { createContext, useCallback, useMemo } from "react";
+import { useImmerReducer } from "use-immer";
 import cartReducer, { cartInitialState } from "./reducers/cart";
 import productsReducer, { productsInitialState } from "./reducers/products";
 
@@ -6,8 +7,11 @@ export const DispatchContext = createContext();
 export const StateContext = createContext();
 
 const GlobalState = ({ children }) => {
-  const [cartState, cartDispatch] = useReducer(cartReducer, cartInitialState);
-  const [productsState, productsDispatch] = useReducer(
+  const [cartState, cartDispatch] = useImmerReducer(
+    cartReducer,
+    cartInitialState
+  );
+  const [productsState, productsDispatch] = useImmerReducer(
     productsReducer,
     productsInitialState
   );

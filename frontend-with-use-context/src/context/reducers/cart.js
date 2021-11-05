@@ -20,7 +20,7 @@ function updateLocalStorage(state) {
   localStorage.setItem("cartData", JSON.stringify(state));
 }
 
-function getUpdateCounts(state) {
+function updateCounts(state) {
   const { totalQuantity, totalAmount } = state.items.reduce(
     (prev, curr) => ({
       totalQuantity: prev.totalQuantity + curr.quantity,
@@ -33,101 +33,73 @@ function getUpdateCounts(state) {
     totalQuantity,
     totalAmount,
   });
-  return { totalQuantity, totalAmount };
+  state.totalQuantity = totalQuantity;
+  state.totalAmount = totalAmount;
 }
 
 function addTocart(state, action) {
   const index = state.items.findIndex((item) => item.id === action.payload.id);
-  const items = [...state.items];
+
   if (index >= 0) {
-    items[index].quantity += 1;
-    toast.info(`increased ${items[index].name} cart quantity`, {
+    state.items[index].quantity += 1;
+    toast.info(`increased ${state.items[index].name} cart quantity`, {
       position: "bottom-left",
     });
   } else {
     const temp = { ...action.payload, quantity: 1 };
-    items.push(temp);
+    state.items.push(temp);
     toast.info(`added ${action.payload.name} to cart`, {
       position: "bottom-left",
     });
   }
 
-  const newState = {
-    ...state,
-    items,
-  };
   // update counts
-  const { totalQuantity, totalAmount } = getUpdateCounts(newState);
-  return {
-    ...newState,
-    totalQuantity,
-    totalAmount,
-  };
+  updateCounts(state);
 }
 
 function updateQuantity(state, action) {
   const { isAdd, product } = action.payload;
 
-  const newState = {
-    ...state,
-    items: state.items
-      .map((item) => {
-        if (item.id === product.id) {
-          if (isAdd) {
-            item.quantity++;
-          } else {
-            item.quantity = Math.max(0, item.quantity - 1);
-            if (item.quantity === 0) {
-              toast.error(`${item.name} removed from cart`, {
-                position: "bottom-left",
-              });
-              return null;
-            }
+  (state.items = state.items
+    .map((item) => {
+      if (item.id === product.id) {
+        if (isAdd) {
+          item.quantity++;
+        } else {
+          item.quantity = Math.max(0, item.quantity - 1);
+          if (item.quantity === 0) {
+            toast.error(`${item.name} removed from cart`, {
+              position: "bottom-left",
+            });
+            return null;
           }
         }
-        return item;
-      })
-      // filter out nulls
-      .filter((item) => item !== null),
-  };
-
-  // update counts
-  const { totalQuantity, totalAmount } = getUpdateCounts(newState);
-  return {
-    ...newState,
-    totalQuantity,
-    totalAmount,
-  };
+      }
+      return item;
+    })
+    // filter out nulls
+    .filter((item) => item !== null)),
+    // update counts
+    updateCounts(state);
 }
 
 function clearCart(state, action) {
-  const newState = {
+  state = {
     items: [],
     totalQuantity: 0,
     totalAmount: 0,
   };
-  updateLocalStorage(newState);
-  return newState;
+  updateLocalStorage(state);
 }
 
 function removeFromCart(state, action) {
-  const newState = {
-    ...state,
-    items: state.items.filter((item) => item.id !== action.payload.id),
-  };
+  state.items = state.items.filter((item) => item.id !== action.payload.id);
+  // update counts
+  updateCounts(state);
 
   toast.error(`${action.payload.name} removed from cart`, {
     position: "bottom-left",
   });
-
-  // update counts
-  const { totalQuantity, totalAmount } = getUpdateCounts(newState);
-
-  return {
-    ...newState,
-    totalQuantity,
-    totalAmount,
-  };
 }
 
 export default function reducer(state, action) {
